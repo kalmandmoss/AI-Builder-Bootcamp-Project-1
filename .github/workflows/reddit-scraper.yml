@@ -22,7 +22,7 @@ jobs:
           pip install requests pandas
 
       - name: Run the scraper
-        run: python reddit_trends.py
+        run: python main.py
 
       - name: Commit changes
         run: |
