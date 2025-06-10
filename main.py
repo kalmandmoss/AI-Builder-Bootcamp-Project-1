@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import time
+from datetime import datetime
 
 # --- User Settings ---
 SUBREDDIT = "golf"        # e.g. 'LocalLLaMA', 'technology', 'Python'
@@ -21,6 +22,9 @@ if response.status_code != 200:
 data = response.json()
 posts = data["data"]["children"]
 
+# Get current timestamp
+current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
 # --- Step 4: Parse fields ---
 records = []
 for post in posts:
@@ -31,13 +35,26 @@ for post in posts:
         "comments": post_data["num_comments"],
         "author": post_data["author"],
         "permalink": f"https://www.reddit.com{post_data['permalink']}",
-        "created_utc": time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(post_data["created_utc"]))
+        "created_utc": time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(post_data["created_utc"])),
+        "scraped_at": current_time
     })
 
 # --- Step 5: Store in pandas DataFrame ---
 df = pd.DataFrame(records)
-print(df.head())
 
-# --- Step 6: Save to CSV ---
-df.to_csv(OUTPUT_CSV, index=False)
-print(f"Saved {len(df)} posts to {OUTPUT_CSV}") 
+# --- Step 6: Append to CSV ---
+try:
+    # Try to read existing CSV
+    existing_df = pd.read_csv(OUTPUT_CSV)
+    # Append new data
+    combined_df = pd.concat([existing_df, df], ignore_index=True)
+    # Remove any duplicate posts (based on permalink) keeping the most recent scrape
+    combined_df = combined_df.sort_values('scraped_at').drop_duplicates(subset=['permalink'], keep='last')
+except FileNotFoundError:
+    # If file doesn't exist, use the new DataFrame
+    combined_df = df
+
+# Save the combined data
+combined_df.to_csv(OUTPUT_CSV, index=False)
+print(f"Saved {len(df)} new posts to {OUTPUT_CSV}")
+print(f"Total posts in dataset: {len(combined_df)}") 
