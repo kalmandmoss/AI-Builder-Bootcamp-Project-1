@@ -1,3 +1,4 @@
+# Updated with new User-Agent header and PyArrow dependency
 import requests
 import pandas as pd
 import time
@@ -13,7 +14,9 @@ OUTPUT_CSV = f"reddit_{SUBREDDIT}_trends.csv"
 url = f"https://www.reddit.com/r/{SUBREDDIT}/top/.json?t={TIME_FILTER}&limit={LIMIT}"
 
 # --- Step 2: Send GET request ---
-headers = {'User-agent': 'Mozilla/5.0'}
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+}
 response = requests.get(url, headers=headers)
 if response.status_code != 200:
     raise Exception(f"Failed to fetch data: {response.status_code}")
