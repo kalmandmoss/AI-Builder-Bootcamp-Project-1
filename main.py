@@ -12,18 +12,27 @@ OUTPUT_CSV = f"reddit_{SUBREDDIT}_trends.csv"
 
 # --- Step 1: Build the endpoint URL ---
 url = f"https://www.reddit.com/r/{SUBREDDIT}/top/.json?t={TIME_FILTER}&limit={LIMIT}"
+print(f"Fetching data from: {url}")
 
 # --- Step 2: Send GET request ---
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    'User-Agent': 'RedditDataCollector/1.0 (by /u/kalmandmoss)',
+    'Accept': 'application/json'
 }
+print(f"Using headers: {headers}")
+
 response = requests.get(url, headers=headers)
+print(f"Response status code: {response.status_code}")
+print(f"Response headers: {dict(response.headers)}")
+
 if response.status_code != 200:
+    print(f"Response content: {response.text[:500]}")  # Print first 500 chars of error response
     raise Exception(f"Failed to fetch data: {response.status_code}")
 
 # --- Step 3: Extract post data ---
 data = response.json()
 posts = data["data"]["children"]
+print(f"Successfully fetched {len(posts)} posts")
 
 # Get current timestamp
 current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
