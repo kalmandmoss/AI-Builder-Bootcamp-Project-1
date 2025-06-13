@@ -5,6 +5,8 @@ on:
   push:
     branches: [ main ]
   workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'  # Run daily at 6 AM UTC
 
 permissions:
   contents: write
@@ -28,6 +30,9 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run scraper
+      env:
+        REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+        REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
       run: python main.py
 
     - name: Commit and push if changed
