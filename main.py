@@ -15,10 +15,7 @@ url = f"https://www.reddit.com/r/{SUBREDDIT}/top/.json?t={TIME_FILTER}&limit={LI
 print(f"Fetching data from: {url}")
 
 # --- Step 2: Send GET request ---
-headers = {
-    'User-Agent': 'github-actions-reddit-scraper/1.0 (by /u/kalmandmoss; github.com/kalmandmoss/AI-Builder-Bootcamp-Project-1)',
-    'Accept': 'application/json'
-}
+headers = {'User-agent': 'Mozilla/5.0'}
 print(f"Using headers: {headers}")
 
 # Add a small delay to be respectful of rate limits
@@ -56,6 +53,7 @@ for post in posts:
 
 # --- Step 5: Store in pandas DataFrame ---
 df = pd.DataFrame(records)
+print(df.head())
 
 # --- Step 6: Append to CSV ---
 try:
