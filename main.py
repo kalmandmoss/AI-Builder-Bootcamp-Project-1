@@ -15,9 +15,21 @@ url = f"https://www.reddit.com/r/{SUBREDDIT}/top/.json?t={TIME_FILTER}&limit={LI
 print(f"Fetching data from: {url}")
 
 # --- Step 2: Send GET request ---
-headers = {'User-agent': 'Mozilla/5.0'}
+headers = {
+    'User-Agent': 'github-actions-reddit-scraper/1.0 (by /u/kalmandmoss; github.com/kalmandmoss/AI-Builder-Bootcamp-Project-1)',
+    'Accept': 'application/json'
+}
+print(f"Using headers: {headers}")
+
+# Add a small delay to be respectful of rate limits
+time.sleep(2)
+
 response = requests.get(url, headers=headers)
+print(f"Response status code: {response.status_code}")
+print(f"Response headers: {dict(response.headers)}")
+
 if response.status_code != 200:
+    print(f"Response content: {response.text[:500]}")  # Print first 500 chars of error response
     raise Exception(f"Failed to fetch data: {response.status_code}")
 
 # --- Step 3: Extract post data ---
